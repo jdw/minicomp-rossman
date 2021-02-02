@@ -21,8 +21,8 @@ class DataCleaner:
         zero_map = (self.data.Sales == 0)
         zero_index = self.data[zero_map].index
         self.data.drop(index=zero_index, inplace=True)
-        if len(self.data.Open.dropna().unique()) == 1:
-            self.data.drop("Open", axis=1, inplace=True)
+        #Store has to be open to sell anyway...
+        self.data.drop("Open", axis=1, inplace=True)
 
     def convert_date(self):
         self.data.loc[:,"Date"] = pd.to_datetime(self.data.Date)
