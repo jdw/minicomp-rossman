@@ -59,9 +59,7 @@ testX.drop("Sales", axis=1, inplace=True)
 
 ct = ColumnTransformer([
         ( "target_enc", ce.target_encoder.TargetEncoder(cols=["Store"]), ["Store"] ),
-       #  ('scaler', StandardScaler(), ['CompetitionDistance',
-       # 'CompetitionOpenSinceMonth', 'CompetitionOpenSinceYear', 'Promo2',
-       # 'Promo2SinceWeek', 'Promo2SinceYear', 'Year', 'Month',
+       #  ('scaler', StandardScaler(), ['CompetitionDistance', 'Year', 'Month',
        # 'Day']),
         ("one_hot_enc", OneHotEncoder(handle_unknown="ignore"), ['StateHoliday', 'StoreType', 'Assortment', 'PromoInterval'])
     ], remainder='passthrough')
@@ -74,7 +72,14 @@ pipe = Pipeline([
 
 # pipe = Pipeline([
 #     ("pre", ct),
-#     ("rf", xg.XGBRegressor(n_estimators = 1000) )
+#     ("rf", xg.XGBRegressor(n_estimators= 5000,
+#                            max_depth = 2,
+#                            booster="gbtree",
+#                            objective="reg:squarederror",
+#                            # reg_alpha = 1.,
+#                            # reg_lambda = 1.,
+#                            learning_rate=1,
+#                            n_jobs=16) )
 # ])
 
 pipe.fit(trainX, trainY)
