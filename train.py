@@ -23,10 +23,28 @@ import numpy as np
 
 import joblib
 
-# dc = DataCleaner("data")
-# data = dc.get_clean_data()
-# joblib.dump(data, "processed_data.joblib")
-data = joblib.load("processed_data.joblib")
+import subprocess
+
+import sys
+
+print('Number of arguments:', len(sys.argv), 'arguments.')
+print('Argument List:', str(sys.argv))
+
+PROCESSED_DATA = sys.argv[1]
+OUTPUT_FILE = sys.argv[2]
+subprocess = subprocess.Popen("echo \"$(git rev-parse HEAD)-$(date '+%Y.%m.%d-%H.%M.%S')\"", shell=True, stdout=subprocess.PIPE)
+gitRevId_timestamp = subprocess.stdout.read().decode("utf-8").strip()
+output_file = open("results/" + gitRevId_timestamp + "-" +OUTPUT_FILE, "a")
+
+data = ""
+try:
+    data = joblib.load(PROCESSED_DATA)
+except FileNotFoundError:
+    dc = DataCleaner("data")
+    data = dc.get_clean_data()
+    joblib.dump(data, PROCESSED_DATA)
+
+
 
 # print(data.isnull().any())
 
@@ -60,8 +78,17 @@ pipe = Pipeline([
 # ])
 
 pipe.fit(trainX, trainY)
-print(f"Training percentage mean squared error {metric( pipe.predict(trainX), trainY.values )}")
-print(f"Test percentage mean squared error {metric( pipe.predict(testX), testY.values )}")
+
+training_pmse = f"Training percentage mean squared error {metric( pipe.predict(trainX), trainY.values )}"
+test_pmse = f"Test percentage mean squared error {metric( pipe.predict(testX), testY.values )}"
+
+print(training_pmse)
+print(test_pmse)
+
+output_file.write(training_pmse)
+output_file.write('\n')
+output_file.write(test_pmse)
+output_file.close()
 
 
 # pipe_lazy_mean = Pipeline([
