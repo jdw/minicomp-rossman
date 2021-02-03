@@ -62,6 +62,7 @@ class DataCleaner:
         self.data["aggregated_promo2"] = promo_feature
         self.data.drop(["Promo2", "Promo2SinceYear", "Promo2SinceWeek"], axis=1, inplace=True)
 
+
     @staticmethod
     def timedelta_promo(current, promo_week, promo_year, promo_bool=1 ):
         if promo_bool == 1:
@@ -69,6 +70,27 @@ class DataCleaner:
             return (current - date).days
         else:
             return 0
+
+    def new_weekend_feature(self):
+        self.data["is_weekend"] = self.data.DayOfWeek.apply(self.is_weekend)
+
+    @staticmethod
+    def is_weekend(x):
+        if x in [5,6,1]:
+            return 1
+        else:
+            return 0
+
+    def new_days_since_competition_feature(self):
+        days_since = []
+        for index, row in self.data.iterrows():
+            if row.CompetitionOpenSinceMonth == row.CompetitionOpenSinceMonth:
+                delta = index - datetime.strptime(f"{int(row.CompetitionOpenSinceYear):04d}-{int(row.CompetitionOpenSinceMonth):02d}", '%Y-%m')
+                days_since.append(delta.days)
+            else:
+                days_since.append(-1)
+        self.data["days_since_competition"] = days_since
+
 
     def handle_nulls(self):
         self.data.drop("CompetitionOpenSinceMonth", axis=1, inplace=True)
@@ -79,6 +101,7 @@ class DataCleaner:
         self.fill_with_mode("StateHoliday")
         self.fill_with_mode("Promo")
         self.fill_with_mode("DayOfWeek")
+
 
     def fill_with_mode(self, column):
         self.data[column].fillna( value=self.data[column].mode()[0], inplace=True )
@@ -91,6 +114,8 @@ class DataCleaner:
         self.drop_null_sales()
         self.convert_date()
         self.new_promotion_feature()
+        self.new_weekend_feature()
+        self.new_days_since_competition_feature()
         self.handle_nulls()
         return self.data
 
@@ -101,5 +126,7 @@ if __name__ == "__main__":
     dc.drop_null_sales()
     dc.convert_date()
     dc.new_promotion_feature()
+    dc.new_weekend_feature()
+    dc.new_days_since_competition_feature()
     dc.handle_nulls()
     print(dc.data.info())
