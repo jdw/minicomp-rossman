@@ -2,6 +2,15 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 run:
-	#jupyter notebook --port=8080 --no-browser train.ipynb
-	jupyter nbconvert --to python train.ipynb
-	python train.py
+	python train.py processed_data.joblib results.txt
+
+predict:
+	python predict.py --data=data/holdout.csv --store=data/store.csv
+
+setup:
+	pip install -r requirements.txt
+	python data.py --test 1
+	
+clean:
+	rm *joblib
+	rm data/*
