@@ -74,6 +74,7 @@ class DataCleaner:
             return 0
 
     def new_weekend_feature(self):
+        print("Add is_weekend flag feature...")
         self.data["is_weekend"] = self.data.DayOfWeek.apply(self.is_weekend)
 
     @staticmethod
@@ -94,6 +95,27 @@ class DataCleaner:
                 days_since.append(-1)
         self.data["days_since_competition"] = days_since
 
+    def new_high_sale_day_of_year_feature(self):
+        print("Generate high sale day of year flag feature...")
+        self.data["HighSaleDay"] = self.data.index
+        self.data["HighSaleDay"] = self.data["HighSaleDay"].apply(lambda x: x.timetuple().tm_yday)
+        self.data["HighSaleDay"] = self.data["HighSaleDay"].apply(self.isHighSale)
+
+    @staticmethod
+    def isHighSale(DayOfYear):
+        # high_sale = [6, 20, 34, 48, 63, 76, 90, 104, 121,
+        #                     153, 167, 181, 196, 209, 224, 238,
+        #                     252, 266, 280, 294, 307, 314, 321,
+        #                     328, 335, 342, 350, 357, 360]
+        high_sale = [121, 181, 321, 328, 335, 350, 357]
+        if DayOfYear in high_sale:
+            return 2
+        elif DayOfYear + 1 in high_sale:
+            return 1
+        elif DayOfYear - 1 in high_sale:
+            return 1
+        else:
+            return 0
 
     def handle_nulls(self):
         self.data.drop("CompetitionOpenSinceMonth", axis=1, inplace=True)
@@ -119,17 +141,12 @@ class DataCleaner:
         self.new_promotion_feature()
         self.new_weekend_feature()
         self.new_days_since_competition_feature()
+        self.new_high_sale_day_of_year_feature()
         self.handle_nulls()
         return self.data
 
 
 if __name__ == "__main__":
     dc = DataCleaner("data")
-    dc.drop_zero_sales()
-    dc.drop_null_sales()
-    dc.convert_date()
-    dc.new_promotion_feature()
-    dc.new_weekend_feature()
-    dc.new_days_since_competition_feature()
-    dc.handle_nulls()
-    print(dc.data.info())
+    data = dc.get_clean_data()
+    print(data.info())

@@ -47,7 +47,7 @@ data = ""
 try:
     data = joblib.load(PROCESSED_DATA)
 except FileNotFoundError:
-    dc = DataCleaner("data")
+    dc = DataCleaner("data/train.csv")
     data = dc.get_clean_data()
     joblib.dump(data, PROCESSED_DATA)
 
