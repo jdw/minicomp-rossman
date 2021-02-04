@@ -15,13 +15,15 @@ conda activate mini-comp-test
 ### Setup
 Clone the repository and change directory to it. Then execute:
 ```bash
-# Installs requirements, prepares Rossman data and downloads pretrained model
 make setup
-
-# Runs predictment against model
+```
+This will install the requirements, prepare the Rossman data as well as download the pretrained model.
+### Run the predictions
+To run the predictions on the holdout data, simply run:
+```bash
 make predict
 ```
-
+After printing the final score, the script will offer you to plot the predictions against the real values, to monitor the performance.
 ## Dataset
 
 The dataset is made of two csvs:
