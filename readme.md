@@ -3,9 +3,18 @@
 This mini competition is adapted from the Kaggle Rossman challenge.  Please refrain from looking at the challenge on Kaggle until after you have finished - this will allow you to get a true measurement of where you are at as a data scientist.
 
 ## Usage
+### Optional: Setup conda environment
+Create a new conda environment:
+```bash
+conda create -n mini-comp-test python=3.8
+```
+and activate the environment:
 ```bash
 conda activate mini-comp-test
-
+```
+### Setup
+Clone the repository and change directory to it. Then execute:
+```bash
 # Installs requirements, prepares Rossman data and downloads pretrained model
 make setup
 
