@@ -14,6 +14,10 @@ args = parser.parse_args()
 cleaner = DataCleaner( args.data, args.store )
 data = cleaner.get_clean_data()
 
+print("Loading model...")
+
 pipe = joblib.load("model.joblib")
+
+print("Predicting sales...")
 
 print(f"Test percentage mean squared error {metric( pipe.predict(data.drop('Sales', axis=1)), data['Sales'].values )}")

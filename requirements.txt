@@ -2,3 +2,7 @@ numpy
 pandas
 category_encoders
 xgboost
+sklearn
+scikit-learn
+matplotlib
+python-dotenv
