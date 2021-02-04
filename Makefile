@@ -2,7 +2,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 train:
-	python train.py processed_data.joblib results.txt
+	python train.py --processed_data=processed_data.joblib
 
 predict:
 	python predict.py --data=data/holdout.csv --store=data/store.csv
