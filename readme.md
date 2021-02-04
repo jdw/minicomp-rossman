@@ -5,7 +5,11 @@ This mini competition is adapted from the Kaggle Rossman challenge.  Please refr
 ## Usage
 ```bash
 conda activate mini-comp-test
+
+# Installs requirements, prepares Rossman data and downloads pretrained model
 make setup
+
+# Runs predictment against model
 make predict
 ```
 
