@@ -1,4 +1,5 @@
 from metric import metric
+from metric import sklearn_metric
 
 import category_encoders as ce
 
@@ -8,6 +9,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import KNNImputer
 from sklearn.ensemble import RandomForestRegressor
+
+from sklearn.model_selection import ParameterGrid
+from sklearn.model_selection import GridSearchCV
 
 from clean_database import DataCleaner
 
@@ -58,16 +62,17 @@ testY = testX["Sales"]
 testX.drop("Sales", axis=1, inplace=True)
 
 ct = ColumnTransformer([
-        ( "target_enc", ce.target_encoder.TargetEncoder(cols=["Store"]), ["Store"] ),
+        ( "target_enc", ce.target_encoder.TargetEncoder(cols=["Store", 'StoreType', 'Assortment', 'PromoInterval']), ["Store", 'StoreType', 'Assortment', 'PromoInterval'] ),
        #  ('scaler', StandardScaler(), ['CompetitionDistance', 'Year', 'Month',
        # 'Day']),
-        ("one_hot_enc", OneHotEncoder(handle_unknown="ignore"), ['StateHoliday', 'StoreType', 'Assortment', 'PromoInterval'])
+        ("one_hot_enc", OneHotEncoder(handle_unknown="ignore"), ['StateHoliday'])
+       #  ("one_hot_enc", OneHotEncoder(handle_unknown="ignore"), ['StateHoliday', 'StoreType', 'Assortment', 'PromoInterval'])
     ], remainder='passthrough')
 
 pipe = Pipeline([
     ("pre", ct),
     # ("imputer", KNNImputer()),
-    ("rf", RandomForestRegressor(verbose=1, n_jobs=16) )
+    ("rf", RandomForestRegressor(n_jobs=-1) )
 ])
 
 # pipe = Pipeline([

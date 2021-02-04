@@ -76,7 +76,7 @@ class DataCleaner:
 
     @staticmethod
     def is_weekend(x):
-        if x in [5,6,1]:
+        if x in [7,1]:
             return 1
         else:
             return 0
