@@ -1,7 +1,7 @@
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-run:
+train:
 	python train.py processed_data.joblib results.txt
 
 predict:
@@ -10,6 +10,7 @@ predict:
 setup:
 	pip install -r requirements.txt
 	python data.py --test 1
+	# download pre-trained model
 	wget https://www.dropbox.com/s/usioui56gvgt0ha/model.joblib
 
 clean:

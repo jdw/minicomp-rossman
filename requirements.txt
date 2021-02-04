@@ -2,8 +2,7 @@ numpy
 pandas
 category_encoders
 xgboost
-sklearn==0.23.2
-scikit-learn
+scikit-learn==0.23.2
 matplotlib
 python-dotenv
 tqdm
