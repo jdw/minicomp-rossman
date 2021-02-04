@@ -31,14 +31,16 @@ import numpy as np
 import joblib
 
 import subprocess
+import argparse
 
-import sys
+parser = argparse.ArgumentParser(description='Trains a model on the rossman dataset')
+parser.add_argument('--processed-data', type=str, help='Path to joblib file')
+parser.add_argument('--output-basename', type=str, help='Default part of filenames in results/',default="results.txt")
+parser.add_argument('--final', type=bool, help='Run final version or not', default=True)
+args = parser.parse_args()
 
-print('Number of arguments:', len(sys.argv), 'arguments.')
-print('Argument List:', str(sys.argv))
-
-PROCESSED_DATA = sys.argv[1]
-OUTPUT_FILE = sys.argv[2]
+PROCESSED_DATA = args.processed_data
+OUTPUT_FILE = args.output_basename
 subprocess = subprocess.Popen("echo \"$(git rev-parse HEAD)-$(date '+%Y.%m.%d-%H.%M.%S')\"", shell=True, stdout=subprocess.PIPE)
 gitRevId_timestamp = subprocess.stdout.read().decode("utf-8").strip()
 output_file = open("results/" + gitRevId_timestamp + "-" +OUTPUT_FILE, "a")
