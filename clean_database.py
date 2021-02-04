@@ -1,15 +1,16 @@
 import pandas as pd
 import os
 from datetime import datetime
+from tqdm import tqdm
 
 class DataCleaner:
-    def __init__(self, path ):
+    def __init__(self, path_to_data, path_to_store="data/store.csv" ):
         self.data = pd.DataFrame()
-        self.read_csv(path)
+        self.read_csv(path_to_data, path_to_store)
 
-    def read_csv(self, path):
-        train = pd.read_csv( os.path.join(path, "train.csv"), low_memory=False )
-        store = pd.read_csv( os.path.join(path, "store.csv"), low_memory=False )
+    def read_csv(self, path_to_data, path_to_store="data/store.csv"):
+        train = pd.read_csv( path_to_data, low_memory=False )
+        store = pd.read_csv( path_to_store, low_memory=False )
         self.data = pd.merge(train, store, on="Store")
         self.data.drop("Customers", axis=1, inplace=True)
         #Set types:
@@ -54,7 +55,8 @@ class DataCleaner:
 
     def new_promotion_feature(self):
         promo_feature = []
-        for index, row in self.data.iterrows():
+        print("Generate new feature: Elapsed days since continuous promotion...")
+        for index, row in tqdm(self.data.iterrows()):
             promo_feature.append( self.timedelta_promo(index,
                                                   row.Promo2SinceWeek,
                                                   row.Promo2SinceYear,
@@ -76,14 +78,15 @@ class DataCleaner:
 
     @staticmethod
     def is_weekend(x):
-        if x in [7,1]:
+        if x in [5,6,7,1]:
             return 1
         else:
             return 0
 
     def new_days_since_competition_feature(self):
         days_since = []
-        for index, row in self.data.iterrows():
+        print("Generate new feature: Elapsed days since competition...")
+        for index, row in tqdm(self.data.iterrows()):
             if row.CompetitionOpenSinceMonth == row.CompetitionOpenSinceMonth:
                 delta = index - datetime.strptime(f"{int(row.CompetitionOpenSinceYear):04d}-{int(row.CompetitionOpenSinceMonth):02d}", '%Y-%m')
                 days_since.append(delta.days)

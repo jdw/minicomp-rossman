@@ -10,6 +10,9 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import KNNImputer
 from sklearn.ensemble import RandomForestRegressor
 
+import sklearn.ensemble as se
+import sklearn
+
 from sklearn.model_selection import ParameterGrid
 from sklearn.model_selection import GridSearchCV
 
@@ -27,10 +30,10 @@ import numpy as np
 
 import joblib
 
-dc = DataCleaner("data")
-data = dc.get_clean_data()
+# dc = DataCleaner("data/train.csv")
+# data = dc.get_clean_data()
 # joblib.dump(data, "processed_data.joblib")
-# data = joblib.load("processed_data.joblib")
+data = joblib.load("processed_data.joblib")
 
 # print(data.isnull().any())
 
@@ -51,35 +54,54 @@ ct = ColumnTransformer([
        #  ("one_hot_enc", OneHotEncoder(handle_unknown="ignore"), ['StateHoliday', 'StoreType', 'Assortment', 'PromoInterval'])
     ], remainder='passthrough')
 
+estimators = [
+    # ("rfr", RandomForestRegressor(n_jobs=-1) ),
+    # ("rfr25", RandomForestRegressor(max_depth=25, n_jobs=-1) ),
+    # ("rfr30", RandomForestRegressor(max_depth=30, n_jobs=-1) ),
+    # ("rfr35", RandomForestRegressor(max_depth=35, n_jobs=-1) ),
+    # ("rfr50", RandomForestRegressor(max_depth=50, n_jobs=-1) ),
+    ("xtr30", se.ExtraTreesRegressor(n_jobs=-1, max_depth=30)),
+    # ("xtr35", se.ExtraTreesRegressor(n_jobs=-1, max_depth=35)),
+    # ("xtr25", se.ExtraTreesRegressor(n_jobs=-1, max_depth=25))
+]
+
 pipe = Pipeline([
     ("pre", ct),
     # ("imputer", KNNImputer()),
-    ("rf", RandomForestRegressor(n_jobs=-1) )
+    # ("rf", RandomForestRegressor(n_jobs=-1) )
+    # ("reg", se.ExtraTreesRegressor(n_jobs=-1, max_depth=30)),
+    ("reg", se.VotingRegressor(estimators=estimators, verbose=True) )
 ])
 
-param_grid = {
-    "rf__n_estimators": [10,50,100],
-    "rf__max_depth": [10,20, 30, 40, 50],
-    "rf__min_impurity_decrease": [0.]
-}
+pipe.fit(trainX, trainY)
+print(f"Training percentage mean squared error {metric( pipe.predict(trainX), trainY.values )}")
+print(f"Test percentage mean squared error {metric( pipe.predict(testX), testY.values )}")
 
-parameters = ParameterGrid(param_grid)
-for p in parameters:
-    pipe = Pipeline([
-        ("pre", ct),
-        # ("imputer", KNNImputer()),
-        ("rf", RandomForestRegressor(n_jobs=16,
-                                     n_estimators=p["rf__n_estimators"],
-                                     max_depth=p["rf__max_depth"],
-                                     min_impurity_decrease=p["rf__min_impurity_decrease"]
-                                     ))
-    ])
-    pipe.fit(trainX, trainY)
-    report = ""
-    for key, value in p.items():
-           report += f'{key}={value}, '
-    report += f'train score {metric( pipe.predict(trainX), trainY.values )}, test score {metric( pipe.predict(testX), testY.values )}'
-    print(report)
+joblib.dump(pipe, "model.joblib")
+
+# param_grid = {
+#     "rf__n_estimators": [10,50,100],
+#     "rf__max_depth": [10,20, 30, 40, 50],
+#     "rf__min_impurity_decrease": [0.]
+# }
+#
+# parameters = ParameterGrid(param_grid)
+# for p in parameters:
+#     pipe = Pipeline([
+#         ("pre", ct),
+#         # ("imputer", KNNImputer()),
+#         ("rf", RandomForestRegressor(n_jobs=16,
+#                                      n_estimators=p["rf__n_estimators"],
+#                                      max_depth=p["rf__max_depth"],
+#                                      min_impurity_decrease=p["rf__min_impurity_decrease"]
+#                                      ))
+#     ])
+#     pipe.fit(trainX, trainY)
+#     report = ""
+#     for key, value in p.items():
+#            report += f'{key}={value}, '
+#     report += f'train score {metric( pipe.predict(trainX), trainY.values )}, test score {metric( pipe.predict(testX), testY.values )}'
+#     print(report)
     # print(f'n_estimators={p["rf__n_estimators"]}, max_depth={p["rf__max_depth"]}, ccp_alpha={p["rf__ccp_alpha"]}: train score {metric( pipe.predict(trainX), trainY.values )}, test score {metric( pipe.predict(testX), testY.values )}')
 
 # param_grid = {
@@ -109,8 +131,7 @@ for p in parameters:
 #
 #     pipe.fit(trainX, trainY)
 #     print(f'max_depth = {p["max_depth"]}, min_child_weight = {p["min_child_weight"]}; train: {metric( pipe.predict(trainX), trainY.values )}, test: {metric( pipe.predict(testX), testY.values )}')
-# # print(f"Training percentage mean squared error {metric( pipe.predict(trainX), trainY.values )}")
-# # print(f"Test percentage mean squared error {metric( pipe.predict(testX), testY.values )}")
+
 
 
 # pipe_lazy_mean = Pipeline([
