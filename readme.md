@@ -2,14 +2,11 @@
 
 This mini competition is adapted from the Kaggle Rossman challenge.  Please refrain from looking at the challenge on Kaggle until after you have finished - this will allow you to get a true measurement of where you are at as a data scientist.
 
-## Setup
-
+## Usage
 ```bash
-#  during the competition run
-python data.py
-
-#  at test time run
-python data.py --test 1
+conda activate mini-comp-test
+make setup
+make predict
 ```
 
 ## Dataset
@@ -93,7 +90,7 @@ Zero sales days are ignored in scoring - part of your pipeline should look for t
 
 The team scores will be ranked - the highest score (lowest RMSPE) will receive a score of 10 for the scoring criteria section.
 
-Each lower score (higher RMSPE) will receive a score of 10-(1 * number in ranking). If they are ranked second, score will be 10-2 = 8. 
+Each lower score (higher RMSPE) will receive a score of 10-(1 * number in ranking). If they are ranked second, score will be 10-2 = 8.
 
 ## Reproducibility
 
