@@ -63,7 +63,7 @@ testX.drop("Sales", axis=1, inplace=True)
 
 ct = ColumnTransformer([
         ( "target_enc", ce.target_encoder.TargetEncoder(cols=["Store", 'StoreType', 'Assortment', 'PromoInterval']), ["Store", 'StoreType', 'Assortment', 'PromoInterval'] ),
-        ("one_hot_enc", OneHotEncoder(handle_unknown="ignore"), ['StateHoliday'])
+        ("one_hot_enc", OneHotEncoder(handle_unknown="ignore"), ['StateHoliday', "Assortment", "StoreType", "PromoInterval"])
     ], remainder='passthrough')
 
 estimators = [
