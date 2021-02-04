@@ -10,7 +10,8 @@ predict:
 setup:
 	pip install -r requirements.txt
 	python data.py --test 1
-	
+	wget https://www.dropbox.com/s/usioui56gvgt0ha/model.joblib
+
 clean:
 	rm *joblib
 	rm data/*

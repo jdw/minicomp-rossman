@@ -2,7 +2,7 @@ numpy
 pandas
 category_encoders
 xgboost
-sklearn
+sklearn==0.23.2
 scikit-learn
 matplotlib
 python-dotenv
