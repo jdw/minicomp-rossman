@@ -1,8 +1,7 @@
 import argparse
-from clean_database import DataCleaner
+from src.data_cleaner import DataCleaner
 import joblib
 from metric import metric
-import pandas as pd
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description='Predict sales on rossman dataset')

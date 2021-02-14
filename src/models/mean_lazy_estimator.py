@@ -1,7 +1,7 @@
 import numpy as np
 
 class MeanLazyEstimator:
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.mean = {}
         self.global_mean = 0
 

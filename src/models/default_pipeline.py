@@ -1,10 +1,8 @@
 import category_encoders as ce
-import xgboost as xg
 
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
-
 
 class DefaultPipeline():
     def __init__(self, regressor):

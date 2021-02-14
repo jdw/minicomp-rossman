@@ -1,7 +1,7 @@
 import numpy as np
 
 class LastLazyEstimator:
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.last_value = {}
 
     def fit(self, X, y):
