@@ -6,28 +6,38 @@ from tqdm import tqdm
 class DataCleaner:
     def __init__(self, path_to_data, path_to_store="data/store.csv" ):
         self.data = pd.DataFrame()
-        self.read_csv(path_to_data, path_to_store)
 
-    def read_csv(self, path_to_data, path_to_store="data/store.csv"):
-        train = pd.read_csv( path_to_data, low_memory=False )
-        store = pd.read_csv( path_to_store, low_memory=False )
-        self.data = pd.merge(train, store, on="Store")
-        self.data.drop("Customers", axis=1, inplace=True)
-        #Set types:
-        self.data.PromoInterval.fillna(value="No Inteval", inplace=True)
-        self.set_types()
-
-    def set_types(self):
-        integer_features = ["DayOfWeek",
+        self.integer_features = ["DayOfWeek",
                             "Promo",
                             "SchoolHoliday",
                             "CompetitionDistance",
                             "CompetitionOpenSinceMonth",
                             "CompetitionOpenSinceYear"]
-        category_features = ["Store", "StateHoliday", "StoreType", "Assortment", "PromoInterval"]
-        for f in integer_features:
+        self.category_features = ["Store", "StateHoliday", "StoreType", "Assortment", "PromoInterval"]
+
+        self.read_csv(path_to_data, path_to_store)
+
+
+    def read_csv(self, path_to_data, path_to_store="data/store.csv"):
+        train = pd.read_csv( path_to_data, low_memory=False )
+        store = pd.read_csv( path_to_store, low_memory=False )
+        self.data = self.merge_store_data(train,store)
+        self.drop_customers()
+        self.set_types()
+
+    def merge_store_data(self, data, store):
+        return pd.merge(data, store, on="Store")
+
+    def drop_customers(self):
+        self.data.drop("Customers", axis=1, inplace=True)
+
+    def set_types(self):
+        #Create new category for PromoInterval
+        self.data.PromoInterval.fillna(value="No Interval", inplace=True)
+        #Set types:
+        for f in self.integer_features:
             self.data[f] = self.data[f].astype("int64", errors="ignore")
-        for f in category_features:
+        for f in self.category_features:
             self.data[f] = self.data[f].astype("category", errors="ignore")
 
     def drop_null_sales(self):
@@ -53,7 +63,7 @@ class DataCleaner:
         #Drop redundant Date column:
         self.data.drop("Date", axis=1, inplace=True)
 
-    def new_promotion_feature(self):
+    def aggregate_promotion_features(self):
         promo_feature = []
         print("Generate new feature: Elapsed days since continuous promotion...")
         for index, row in tqdm(self.data.iterrows()):
@@ -84,7 +94,7 @@ class DataCleaner:
         else:
             return 0
 
-    def new_days_since_competition_feature(self):
+    def aggregated_competition_features(self):
         days_since = []
         print("Generate new feature: Elapsed days since competition...")
         for index, row in tqdm(self.data.iterrows()):
@@ -95,7 +105,7 @@ class DataCleaner:
                 days_since.append(-1)
         self.data["days_since_competition"] = days_since
 
-    def new_high_sale_day_of_year_feature(self):
+    def manual_high_sale_day_feature(self):
         print("Generate high sale day of year flag feature...")
         self.data["HighSaleDay"] = self.data.index
         self.data["HighSaleDay"] = self.data["HighSaleDay"].apply(lambda x: x.timetuple().tm_yday)
@@ -138,10 +148,10 @@ class DataCleaner:
         self.drop_zero_sales()
         self.drop_null_sales()
         self.convert_date()
-        self.new_promotion_feature()
+        self.aggregate_promotion_features()
         self.new_weekend_feature()
-        self.new_days_since_competition_feature()
-        self.new_high_sale_day_of_year_feature()
+        self.aggregated_competition_features()
+        self.manual_high_sale_day_feature()
         self.handle_nulls()
         return self.data
 
