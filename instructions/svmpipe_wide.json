@@ -1,0 +1,13 @@
+{
+  "train": "../data/train.csv",
+  "model": "svmpipe",
+  "model_output": "../models/svmpipe_wide.joblib",
+  "report_output": "../results/svmpipe_wide.json",
+  "grid": {
+    "kernel": ["linear", "poly", "rbf"],
+    "degree": [2,3,4,5],
+    "C": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9, 1],
+    "epsilon": [1e-2, 1e-1, 2e-1, 3e-1],
+    "max_iter": [1000]
+  }
+}

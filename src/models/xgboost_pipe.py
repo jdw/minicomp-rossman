@@ -1,6 +1,5 @@
 from src.models.default_pipeline import DefaultPipeline
 import xgboost as xg
-import joblib
 
 
 class XGBoostPipe(DefaultPipeline):
@@ -13,4 +12,3 @@ class XGBoostPipe(DefaultPipeline):
 
 if __name__ == "__main__":
     model = XGBoostPipe({})
-    joblib.dump(model, "../../models/base/xgboostpipe.joblib")

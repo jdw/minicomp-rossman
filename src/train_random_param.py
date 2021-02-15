@@ -6,6 +6,7 @@ from sklearn.model_selection import ParameterGrid
 
 import argparse
 import json
+import joblib
 import tqdm
 import random
 
@@ -69,17 +70,19 @@ class RandomParameterSearch:
             self.min_val_score = val_score
             self.best_model = model
             self.best_param = parameter
+            joblib.dump(model, self.instructions["model_output"])
 
-    def write_report(self, path):
+    def write_report(self):
         report = {
-            "best_model": "",
+            "model": self.instructions["model"],
+            "best_model": self.instructions["model_output"],
             "best_parameter": self.best_param,
             "val_score": self.min_val_score,
             "parameter_grid": self.instructions["grid"],
             "results": self.param_result
         }
 
-        with open(path, 'w') as outfile:
+        with open(self.instructions["report_output"], 'w') as outfile:
             json.dump(report, outfile)
 
 
@@ -88,17 +91,13 @@ if __name__ == "__main__":
     parser.add_argument('--instructions',
                         type=str,
                         help='Path to instructions file (json)',
-                        default="../instructions/xgboostpipe_wide.json")
-    parser.add_argument('--output',
-                        type=str,
-                        help='Path to report output (json)',
-                        default="../results/xgboostpipe_wide.json")
+                        default="../instructions/extratreepipe_wide.json")
     parser.add_argument('--max_runs',
                         type=int,
                         help='Number of random choices',
-                        default=100)
+                        default=200)
     args = parser.parse_args()
 
     rnd = RandomParameterSearch(args.instructions)
     rnd.search(max_runs=args.max_runs)
-    rnd.write_report(args.output)
+    rnd.write_report()

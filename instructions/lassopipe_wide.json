@@ -1,0 +1,9 @@
+{
+  "train": "../data/train.csv",
+  "model": "lasso",
+  "model_output": "../models/lassopipe_wide.joblib",
+  "report_output": "../results/lassopipe_wide.json",
+  "grid": {
+    "alpha": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.5,2]
+  }
+}

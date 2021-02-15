@@ -1,0 +1,14 @@
+{
+  "train": "../data/train.csv",
+  "model": "xgboostpipe",
+  "model_output": "../models/xgboostpipe_fine2.joblib",
+  "report_output": "../results/xgboostpipe_fine2.json",
+  "grid": {
+    "gamma": [0],
+    "learning_rate": [0.02, 0.05, 0.1],
+    "max_depth": [15, 16, 17 ],
+    "n_estimators": [40,50,60],
+    "reg_alpha": [65, 70, 75],
+    "reg_lambda": [1, 1.5, 2, 2.5, 3]
+  }
+}

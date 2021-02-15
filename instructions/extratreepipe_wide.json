@@ -1,0 +1,10 @@
+{
+"train": "../data/train.csv",
+"model": "extratreepipe",
+"model_output": "../models/extratreepipe_wide.joblib",
+"report_output": "../results/extratreepipe_wide.json",
+"grid": {
+"criterion": ["mse", "friedman_mse"],
+"ccp_alpha": [1e-3, 1e-2, 1e-1, 1e-0, 10, 100]
+}
+}

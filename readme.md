@@ -1,6 +1,22 @@
-## Rossman Kaggle Mini-Competition
+# Rossman Sales Prediction (Mini-Competition)
 
-This mini competition is adapted from the Kaggle Rossman challenge.  Please refrain from looking at the challenge on Kaggle until after you have finished - this will allow you to get a true measurement of where you are at as a data scientist.
+This project is the result of a small competition ran at the "Data Science Retreat" bootcamp. The competition challenged small teams to predict the sales from the Rossman dataset. The winner was determined not only by the final performance but also the reproducebility and cleaness of the code.
+
+Since the conclusion of the challenge, we have gone back to implement some of the ideas from the other teams, clean up the code and make this project more presentable.
+
+## Results
+According to the requirements of the competition, we score the models using the root mean square percentage error (RMSPE):
+
+![](./assets/rmspe.png)
+
+Thus, lower score is better.
+
+|Model   | RMSPE   |
+|---|---|
+|Mean Lazy Estimator| 41.95|
+|ExtraTreeRegressor| 28.33|
+|RandomForestRegressor| 28.86|
+|XGBoostRegressor| 26.69 |
 
 ## Usage
 ### Optional: Setup conda environment
@@ -24,108 +40,60 @@ To run the predictions on the holdout data, simply run:
 make predict
 ```
 After printing the final score, the script will offer you to plot the predictions against the real values, to monitor the performance.
-## Dataset
 
-The dataset is made of two csvs:
+# Modeling Approach
+## Original Dataset
+The data set and goal is described in detail at the [original repository](https://github.com/ADGEfficiency/minicomp-rossman).
+## Data Exploration and Cleaning
+We first monitor the correlation and distribution of the available features, as well as the target "Sales". Given this information we clean and prepare the data.
 
-```
-#  store.csv
-['Store', 'StoreType', 'Assortment', 'CompetitionDistance', 'CompetitionOpenSinceMonth', 'CompetitionOpenSinceYear', 'Promo2', 'Promo2SinceWeek', 'Promo2SinceYear', 'PromoInterval']
+### Correlations
+We find that the "Open" and "Customers" features are strongly correlated with the target.
+- The "Open" feature indicates days where the store closed and reported zero sales, due to the nature of the required metric, we drop this feature and entries with zero sales respectively.
+- The "Customers" feature directly indicates the amount of sales, and is not expected to be known in advance. At the current stage we drop this column. In the future this column might be used to engineer better features.
+- 
+### Null Values
+We find multiple columns that contain null values, which we fill with the mean or mode as follows:
+- mean: ``"CompetitionDistance"``
+- mode: ``"SchoolHoliday"``, ``"StateHoliday"``, ``"Promo"``, ``"DayOfWeek"``
 
-#  train.csv
-['Date', 'Store', 'DayOfWeek', 'Sales', 'Customers', 'Open', 'Promo','StateHoliday', 'SchoolHoliday']
-```
+### Outliers
+We employ an ``IsolationForest`` to detect and remove outliers from the training set before training. The contamination is set to ``1e-4``
 
-More info from Kaggle:
+### Feature Engineering
+We have designed and implemented three new features, extracted from the available data:
+- The columns ``"Promo2"``, ``"Prome2SinceYear"`` and ``"Promo2SinceWeek"`` are aggregated into a single numerical column counting the days since the continuous promotion started. If there is no current running promotion the value is set to ``0``. The original columns are dropped.
+- Similarly, the columns ``"CompeitionOpenSinceMonth`` and ``"CompetitionOpenSinceYear"`` are aggregated into a single feature counting the days since competition opened.
+- Noting that days around the weekend score the highest average sales, we generate a new feature flagging fridays, saturdays and mondays.
+- In addition: We have flagged high sales days of the year by manually monitoring the mean sales per day of year. These days correspond to days around eastern, christmas and the likes.
 
-```
-Id - an Id that represents a (Store, Date) duple within the test set
+### Categorical Encoding
+All non numerical columns are encoded to resemble numerical values, in the following manner:
+- The ``"Store"``, ``"StoreType"``,``"Assortment"``,``"PromoInterval"`` are target encoded, reflecting the mean ``"Sales"`` per category.
+- The ``"StateHoliday"`` column is one-hot encoded.
 
-Store - a unique Id for each store
+# Models and Training
+For all training runs, we split the data such that the validation set contains the last year of data, matching the time period contained in the holdout set.
 
-Sales - the turnover for any given day (this is what you are predicting)
+## Models
+We then proceed to implement, train and test a multitude of different regression models, including custom lazy estimators, ``XGBoostRegressor``, ``RandomForestRegressor``, and ``ExtraTreeRegressor``. In addition we explore an alternative approach provided by facebook's ``Prophet``.
 
-Customers - the number of customers on a given day
-
-Open - an indicator for whether the store was open: 0 = closed, 1 = open
-
-StateHoliday - indicates a state holiday. Normally all stores, with few exceptions, are closed on state holidays. Note that all schools are closed on public holidays and weekends. a = public holiday, b = Easter holiday, c = Christmas, 0 = None
-
-SchoolHoliday - indicates if the (Store, Date) was affected by the closure of public schools
-
-StoreType - differentiates between 4 different store models: a, b, c, d
-
-Assortment - describes an assortment level: a = basic, b = extra, c = extended
-
-CompetitionDistance - distance in meters to the nearest competitor store
-
-CompetitionOpenSince[Month/Year] - gives the approximate year and month of the time the nearest competitor was opened
-
-Promo - indicates whether a store is running a promo on that day
-
-Promo2 - Promo2 is a continuing and consecutive promotion for some stores: 0 = store is not participating, 1 = store is participating
-
-Promo2Since[Year/Week] - describes the year and calendar week when the store started participating in Promo2
-PromoInterval - describes the consecutive intervals Promo2 is started, naming the months the promotion is started anew. E.g. "Feb,May,Aug,Nov" means each round starts in February, May, August, November of any given year for that store
-```
-
-The holdout test period is from 2014-08-01 to 2015-07-31 - the holdout test dataset is the same format as `train.csv`, as is called `holdout.csv`.
-
-After running `python data.py -- test 1`, the folder `data` will look like:
+## Hyperparameter Tuning
+The hyperparameter tuning is done by creating a parameter grid and try a random subset of parameter combinations. This way the computation time remains small, while at the same time a large area of the parameter landscape is explored. To this end, we have implemented a class that expects an instruction file (JSON), specifying the model to be trained, the parameters to scan and the location of the output:
 
 ```bash
-data
-├── holdout.csv
-├── rossmann-store-sales.zip
-├── store.csv
-└── train.csv
+cd src
+python train_random_param.py --instructions="../instructions/<your_instructions>.json --max_runs=200
 ```
 
-## Scoring Criteria
+The programm will run the search and save the best model and a report summary to the specified location.
 
-The competition is scored based on a composite of predictive accuracy and reproducibility.
+## Final Training
+The final training is performed on the whole training dataset, using the best parameters obtained from the random parameter search:
 
-## Predictive accuracy
-
-The task is to predict the `Sales` of a given store on a given day.
-
-Submissions are evaluated on the root mean square percentage error (RMSPE):
-
-![](./assets/rmspe.png)
-
-```python
-def metric(preds, actuals):
-    preds = preds.reshape(-1)
-    actuals = actuals.reshape(-1)
-    assert preds.shape == actuals.shape
-    return 100 * np.linalg.norm((actuals - preds) / actuals) / np.sqrt(preds.shape[0])
+```bash
+cd src
+python train --processed-data="../data/processed/clean_data.joblib" --report="../results/<your report>.json" --final="True"
 ```
 
-Zero sales days are ignored in scoring - part of your pipeline should look for these rows and drop them (in both test & train)
-
-The team scores will be ranked - the highest score (lowest RMSPE) will receive a score of 10 for the scoring criteria section.
-
-Each lower score (higher RMSPE) will receive a score of 10-(1 * number in ranking). If they are ranked second, score will be 10-2 = 8.
-
-## Reproducibility
-
-The entire model should be completely reproducible - to score this the teacher will clone your repository and follow the instructions as per the readme.  All teams start out with a score of 10.  One point is deducted for each step not included in the repo.
-
-## Advice
-
-Commit early and often
-
-Notebooks don't merge easily!
-
-Visualize early
-
-Look at the predictions your model is getting wrong - can you engineer a feature for those samples?
-
-Models
-- baseline (average sales per store from in training data)
-- random forest
-- XGBoost
-
-Use your DSR instructor(s)
-- you are not alone - they are here to help with both bugs and data science advice
-- git issues, structuring the data on disk, models to try, notebook problems and conda problems are all things we have seen before
+This will write a model to ``models/final/<model>.joblib``, which can be loaded and used for predictions.

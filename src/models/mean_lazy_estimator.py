@@ -15,7 +15,7 @@ class MeanLazyEstimator:
     def predict(self, X):
         tmp = X.copy()
         tmp["mean"] = tmp["Store"].apply(lambda x: self.get_mean(x))
-        return tmp["mean"].values
+        return tmp["mean"].astype(float).values
 
 
     def get_mean(self, store_id):
