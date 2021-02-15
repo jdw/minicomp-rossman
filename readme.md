@@ -97,3 +97,14 @@ python train --processed-data="../data/processed/clean_data.joblib" --report="..
 ```
 
 This will write a model to ``models/final/<model>.joblib``, which can be loaded and used for predictions.
+
+## Prediction
+To make predictions simply use:
+```bash
+cd src
+python predict.py --data="../data/holdout.csv" --model="../models/final/xgboostpipe.joblib"
+```
+For convenience the script will return the final score as well as display some examples for the predictions.
+
+# Future Improvements
+The current root mean squared percentage error is not particularly impressive. In order to improve it, one should focus a lot more on the features, performing manual outlier removal, incorporate the customer data and more.
