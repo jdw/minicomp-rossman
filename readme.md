@@ -14,6 +14,7 @@ Thus, lower score is better.
 |Model   | RMSPE   |
 |---|---|
 |Mean Lazy Estimator| 41.95|
+|Prophet|31.39|
 |ExtraTreeRegressor| 28.33|
 |RandomForestRegressor| 28.86|
 |XGBoostRegressor| 26.69 |

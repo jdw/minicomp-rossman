@@ -5,6 +5,7 @@ from src.models.random_forest_pipe import RandomForestPipe
 from src.models.lassopipe import LassoPipe
 from src.models.svmpipe import SVMPipe
 from src.models.extratreepipe import ExtraTreePipe
+from src.models.prophet import Prophet
 
 class ModelLoader():
     def __init__(self):
@@ -14,12 +15,13 @@ class ModelLoader():
             "extratreepipe": ExtraTreePipe({}),
             "lassopipe": LassoPipe({}),
             "svmpipe": SVMPipe({}),
+            "prophet": Prophet(),
             "lastlazy": LastLazyEstimator(),
             "meanlazy": MeanLazyEstimator()
         }
 
     def get_model(self, model="meanlazy", parameters={}):
-        if model in ["lastlazy", "meanlazy"]:
+        if model in ["lastlazy", "meanlazy", "prophet"]:
             return self.models[model]
         else:
             self.models[model].pass_arguments(parameters)

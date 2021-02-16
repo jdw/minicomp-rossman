@@ -19,7 +19,7 @@ parser.add_argument('--processed-data',
 parser.add_argument('--report',
                     type=str,
                     help='Report to read best parameters from',
-                    default="../results/meanlazy.json")
+                    default="../results/prophet.json")
 parser.add_argument('--final',
                     type=bool,
                     help='If true no test-train-split is performed',
