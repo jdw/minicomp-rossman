@@ -18,7 +18,10 @@ Thus, lower score is better.
 |ExtraTreeRegressor| 28.33|
 |RandomForestRegressor| 28.86|
 |XGBoostRegressor| 26.69 |
+### Visualization
+We have visualized the predictions using a small [dash](http://minicomp-dash-app.herokuapp.com/) app.
 
+![preview](assets/dash_preview.jpg)
 ## Usage
 ### Optional: Setup conda environment
 Create a new conda environment:
