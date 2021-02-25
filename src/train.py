@@ -2,7 +2,7 @@ from src.utility.load_data import load_data
 from src.utility.model_loader import ModelLoader
 from src.utility.test_train_split import get_train_test_split
 
-from metric import metric
+from src.metric import metric
 
 import argparse
 import json
@@ -30,7 +30,7 @@ PROCESSED_DATA = args.processed_data
 REPORT = args.report
 FINAL = args.final
 
-data = load_data("../data/train.csv", PROCESSED_DATA)
+data = load_data("data/train.csv", PROCESSED_DATA)
 trainX, trainY, testX, testY = get_train_test_split(data,
                                                     train_end="2013-07-31",
                                                     test_start="2013-08-01",
@@ -55,4 +55,4 @@ if not FINAL:
     print(test_pmse)
 
 
-joblib.dump(model, "../models/final/" + report["model"] + ".joblib")
+joblib.dump(model, "models/final/" + report["model"] + ".joblib")

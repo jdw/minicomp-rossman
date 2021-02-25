@@ -3,7 +3,7 @@ from datetime import datetime
 from tqdm import tqdm
 
 class DataCleaner:
-    def __init__(self, path_to_data, path_to_store="../data/store.csv" ):
+    def __init__(self, path_to_data, path_to_store="data/store.csv" ):
         self.data = pd.DataFrame()
 
         self.integer_features = ["DayOfWeek",

@@ -1,8 +1,8 @@
 {
-  "train": "../data/train.csv",
+  "train": "data/train.csv",
   "model": "randomforestpipe",
-  "model_output": "../models/randomforestpipe_fine.joblib",
-  "report_output": "../results/randomforestpipe_fine.json",
+  "model_output": "models/randomforestpipe_fine.joblib",
+  "report_output": "results/randomforestpipe_fine.json",
   "grid": {
     "max_depth": [17,18,19,20,21,22,23],
     "n_estimators": [80,90,100],

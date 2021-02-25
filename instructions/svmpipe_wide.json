@@ -1,8 +1,8 @@
 {
-  "train": "../data/train.csv",
+  "train": "data/train.csv",
   "model": "svmpipe",
-  "model_output": "../models/svmpipe_wide.joblib",
-  "report_output": "../results/svmpipe_wide.json",
+  "model_output": "models/svmpipe_wide.joblib",
+  "report_output": "results/svmpipe_wide.json",
   "grid": {
     "kernel": ["linear", "poly", "rbf"],
     "degree": [2,3,4,5],

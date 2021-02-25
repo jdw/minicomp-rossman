@@ -1,8 +1,8 @@
 {
-  "train": "../data/train.csv",
+  "train": "data/train.csv",
   "model": "xgboostpipe",
-  "model_output": "../models/xgboostpipe_wide.joblib",
-  "report_output": "../results/xgboostpipe_wide.json",
+  "model_output": "models/xgboostpipe_wide.joblib",
+  "report_output": "results/xgboostpipe_wide.json",
   "grid": {
     "gamma": [0, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e-0, 1e1],
     "learning_rate": [1e-3, 1e-2, 1e-1, 2e-1, 3e-1],

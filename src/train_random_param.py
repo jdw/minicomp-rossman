@@ -1,4 +1,4 @@
-from metric import metric
+from src.metric import metric
 from src.utility.model_loader import ModelLoader
 from src.utility.load_data import load_data
 from src.utility.test_train_split import get_train_test_split
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     parser.add_argument('--instructions',
                         type=str,
                         help='Path to instructions file (json)',
-                        default="../instructions/extratreepipe_wide.json")
+                        default="instructions/extratreepipe_wide.json")
     parser.add_argument('--max_runs',
                         type=int,
                         help='Number of random choices',

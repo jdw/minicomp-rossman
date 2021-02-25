@@ -35,10 +35,49 @@ Clone the repository and change directory to it. Then execute:
 make setup
 ```
 This will install the requirements, prepare the Rossman data as well as download the pretrained model.
+
+### Hyperparameter search
+We have implemented a random grid search to find the best hyperparameters.
+This procedure is controled by a instructions file, of the following format:
+
+```json
+{
+  "train": "data/train.csv",
+  "model": "xgboostpipe",
+  "model_output": "models/xgboostpipe_fine.joblib",
+  "report_output": "results/xgboostpipe_fine.json",
+  "grid": {
+    "gamma": [0],
+    "learning_rate": [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5],
+    "max_depth": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    "n_estimators": [10,20,30,40,50],
+    "reg_alpha": [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150 ],
+    "reg_lambda": [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5]
+  }
+}
+```
+
+To begin the hyperparameter search simply execute
+
+```bash
+make hyperparameter-search INSTRUCTION=<path to instruction> MAXRUNS=<number of max runs>
+```
+
+This will train a number of random parameter combinations from the provided grid, keep track of the best model and finally save it to the location specified in the instructions file.
+
+### Final training
+In order to perform the final training on the best model and the whole data set, execute
+
+```bash
+make train REPORT=<path to report> FINAL=1
+```
+
+This will perform the training on the whole data set and save the model to ```m̀odels/final/<model name>.joblib```.
+
 ### Run the predictions
 To run the predictions on the holdout data, simply run:
 ```bash
-make predict
+make predict MODEL=<path to model>
 ```
 After printing the final score, the script will offer you to plot the predictions against the real values, to monitor the performance.
 
@@ -78,34 +117,7 @@ For all training runs, we split the data such that the validation set contains t
 
 ## Models
 We then proceed to implement, train and test a multitude of different regression models, including custom lazy estimators, ``XGBoostRegressor``, ``RandomForestRegressor``, and ``ExtraTreeRegressor``. In addition we explore an alternative approach provided by facebook's ``Prophet``.
-
-## Hyperparameter Tuning
-The hyperparameter tuning is done by creating a parameter grid and try a random subset of parameter combinations. This way the computation time remains small, while at the same time a large area of the parameter landscape is explored. To this end, we have implemented a class that expects an instruction file (JSON), specifying the model to be trained, the parameters to scan and the location of the output:
-
-```bash
-cd src
-python train_random_param.py --instructions="../instructions/<your_instructions>.json --max_runs=200
-```
-
-The programm will run the search and save the best model and a report summary to the specified location.
-
-## Final Training
-The final training is performed on the whole training dataset, using the best parameters obtained from the random parameter search:
-
-```bash
-cd src
-python train --processed-data="../data/processed/clean_data.joblib" --report="../results/<your report>.json" --final="True"
-```
-
-This will write a model to ``models/final/<model>.joblib``, which can be loaded and used for predictions.
-
-## Prediction
-To make predictions simply use:
-```bash
-cd src
-python predict.py --data="../data/holdout.csv" --model="../models/final/xgboostpipe.joblib"
-```
-For convenience the script will return the final score as well as display some examples for the predictions.
+Following the procedure described above.
 
 # Future Improvements
 The current root mean squared percentage error is not particularly impressive. In order to improve it, one should focus a lot more on the features, performing manual outlier removal, incorporate the customer data and more.

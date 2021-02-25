@@ -2,7 +2,7 @@ import argparse
 from src.data_cleaner import DataCleaner
 from src.utility.load_data import load_data
 import joblib
-from metric import metric
+from src.metric import metric
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description='Predict sales on rossman dataset')
@@ -11,7 +11,7 @@ parser.add_argument('--model', type=str, help='Path to model dump (joblib)', def
 
 args = parser.parse_args()
 #
-data = load_data(args.data, "../data/processed/clean_holdout_data.joblib")
+data = load_data(args.data, "data/processed/clean_holdout_data.joblib")
 
 print("Loading model...")
 
