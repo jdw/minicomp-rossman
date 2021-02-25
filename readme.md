@@ -60,7 +60,7 @@ This procedure is controled by a instructions file, of the following format:
 }
 ```
 
-To begin the hyperparameter search simply execute
+To begin the hyperparameter-search execute
 
 ```bash
 make hyperparameter-search INSTRUCTION=<path to instruction> MAXRUNS=<number of max runs>
